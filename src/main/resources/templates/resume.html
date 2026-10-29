@@ -1,0 +1,158 @@
+<html th:lang="${#locale.language}">
+  <head>
+    <style>
+      /* page */
+      @page {
+        size: A4 portrait;
+        margin: 0.7cm 1cm;
+      }
+
+      /* reset */
+      * {
+        position: relative;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-collapse: collapse;
+        border-spacing: 0;
+      }
+
+      /* font */
+      .google-11 { font-family: "Google Sans"; font-size: 11pt; line-height: 1.2; }
+      .google-12 { font-family: "Google Sans"; font-size: 12pt; line-height: 1.2; }
+      .google-14 { font-family: "Google Sans"; font-size: 14pt; line-height: 1.2; }
+      .times-11 { font-family: "Times New Roman"; font-size: 11pt; }
+      .times-12 { font-family: "Times New Roman"; font-size: 12pt; }
+      .source-12 { font-family: "Source Sans"; font-size: 12pt; }
+
+      /* position */
+      .left    { text-align: left; }
+      .right   { text-align: right; }
+      .center  { text-align: center; }
+      .justify { text-align: justify; }
+
+      /* typography */
+      .normal   { font-weight: 400; }
+      .semibold { font-weight: 600; }
+      .uppercase  { text-transform: uppercase; }
+      .capitalize { text-transform: capitalize; }
+
+      a {
+        text-decoration: none;
+        color: #2e57ce;
+      }
+
+      /* table */
+      table {
+        width: 100%;
+      }
+
+      /* list */
+      ul {
+        padding-left: 0.3cm;
+        list-style: none;
+      }
+
+      li {
+        padding-left: 0.4cm;
+      }
+
+      li::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <th:block th:fragment="company-name(company)">
+      <a th:if="${company != null && company.website != null}" th:href="${company.website}" th:text="${company.name}"></a>
+      <span th:if="${company != null && company.website == null}" th:text="${company.name}"></span>
+    </th:block>
+
+    <table>
+      <tr>
+        <td class="google-14 semibold uppercase left" th:text="${resume.name}"></td>
+        <td class="google-14 semibold uppercase right" th:text="${resume.role}"></td>
+      </tr>
+      <tr>
+        <td class="times-12 normal left"><a th:href="${resume.linkedin}">LinkedIn</a></td>
+        <td class="times-12 normal right"><a th:href="${'mailto:' + resume.email}" th:text="${resume.email}"></a></td>
+      </tr>
+      <tr>
+        <td class="times-12 normal left"><a th:href="${resume.github}">GitHub</a></td>
+        <td class="times-12 normal right" th:text="${resume.phone}"></td>
+      </tr>
+    </table>
+
+    <br />
+
+    <th:block th:unless="${#lists.isEmpty(resume.experiences)}">
+      <p class="google-12 semibold uppercase center" th:text="#{section.experience}"></p>
+
+      <section th:each="experience : ${resume.sortedExperiences}">
+        <table>
+          <td class="source-12 normal left">
+            <th:block th:replace="~{:: company-name(${experience.company})}"></th:block>
+            <span th:if="${experience.client != null}"> - </span>
+            <th:block th:replace="~{:: company-name(${experience.client})}"></th:block>
+            <span> | </span>
+            <span class="semibold" th:text="${experience.role}"></span>
+          </td>
+
+          <td class="source-12 semibold right">
+            <th:block th:text="${experience.formattedFrom}"></th:block>
+            <th:block> - </th:block>
+            <span class="capitalize" th:text="${experience.formattedTo ?: #messages.msg('role.current')}"></span>
+          </td>
+        </table>
+
+        <p class="times-11 justify" th:text="${experience.formattedDescription}"></p>
+
+        <ul>
+          <li class="times-11 justify" th:each="task : ${experience.formattedTasks}" th:text="${task}"></li>
+        </ul>
+
+        <p th:unless="${#strings.isEmpty(experience.collectedSkills)}" class="times-11 justify" th:text="${'Skills: ' + experience.collectedSkills + '.'}"></p>
+
+        <br />
+      </section>
+    </th:block>
+
+    <th:block th:unless="${#lists.isEmpty(resume.degrees)}">
+      <p class="google-12 semibold uppercase center" th:text="#{section.education}"></p>
+
+      <table>
+        <tr th:each="degree : ${resume.sortedDegrees}">
+          <td class="source-12 semibold left">
+            <th:block th:text="${degree.degree}"></th:block>
+            <span class="normal" th:text="${'(' + degree.institution + ')'}"></span>
+          </td>
+
+          <td class="source-12 semibold right">
+            <th:block th:text="${degree.from}"></th:block>
+            <th:block> - </th:block>
+            <span class="capitalize" th:text="${degree.to ?: #messages.msg('degree.ongoing')}"></span>
+          </td>
+        </tr>
+      </table>
+
+      <br />
+    </th:block>
+
+    <th:block th:unless="${#lists.isEmpty(resume.certifications)}">
+      <h2 class="google-12 semibold uppercase center" th:text="#{section.certification}"></h2>
+
+      <table>
+        <tr th:each="certification : ${resume.sortedCertifications}">
+          <td class="source-12 semibold left">
+            <th:block th:text="${certification.certification}"></th:block>
+            <span class="normal" th:text="${'(' + certification.institution + ')'}"></span>
+          </td>
+
+          <td class="source-12 semibold right" th:text="${certification.year}"></td>
+        </tr>
+      </table>
+    </th:block>
+  </body>
+</html>
