@@ -12,6 +12,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 import jakarta.annotation.Nullable;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -21,8 +22,8 @@ import lombok.Builder;
  */
 @Builder
 public record Experience(
-    @NotNull Company company,
-    @Nullable Company client,
+    @Valid @NotNull Company company,
+    @Valid @Nullable Company client,
     @NotBlank String role,
     @NotNull YearMonth from,
     @Nullable YearMonth to,
